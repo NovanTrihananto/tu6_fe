@@ -1,62 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+const API_URL = "https://tugas5tcc-85782834625.us-central1.run.app"; // URL Backend di Cloud Run
+
 function App() {
     const [notes, setNotes] = useState([]);
     const [judul, setJudul] = useState('');
     const [catatan, setCatatan] = useState('');
-    const [editId, setEditId] = useState(null); // Buat tau lagi edit yang mana
+    const [editId, setEditId] = useState(null);
 
-    // Fetch data saat pertama kali load
     useEffect(() => {
         fetchNotes();
     }, []);
-    
-    // Ambil semua notes dari backend
+
     const fetchNotes = async () => {
-        const response = await fetch('http://localhost:5000/users');
-        const data = await response.json();
-        setNotes(data);
+        try {
+            const response = await fetch(`${API_URL}/users`);
+            const data = await response.json();
+            setNotes(data);
+        } catch (error) {
+            console.error("Error fetching notes:", error);
+        }
     };
 
-    // Tambah catatan baru
     const addNote = async () => {
-        await fetch('http://localhost:5000/add-users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ Judul: judul, Catatan: catatan })
-        });
-        setJudul('');
-        setCatatan('');
-        fetchNotes();
+        try {
+            await fetch(`${API_URL}/add-users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Judul: judul, Catatan: catatan })
+            });
+            setJudul('');
+            setCatatan('');
+            fetchNotes();
+        } catch (error) {
+            console.error("Error adding note:", error);
+        }
     };
 
-    // Ambil data yang mau diedit ke form
     const handleEdit = (note) => {
         setEditId(note.id);
         setJudul(note.Judul);
         setCatatan(note.Catatan);
     };
 
-    // Update catatan
     const updateNote = async () => {
-        await fetch(`http://localhost:5000/edit-users/${editId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ Judul: judul, Catatan: catatan })
-        });
-        setJudul('');
-        setCatatan('');
-        setEditId(null);
-        fetchNotes();
+        try {
+            await fetch(`${API_URL}/edit-users/${editId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ Judul: judul, Catatan: catatan })
+            });
+            setJudul('');
+            setCatatan('');
+            setEditId(null);
+            fetchNotes();
+        } catch (error) {
+            console.error("Error updating note:", error);
+        }
     };
 
-    // Hapus catatan
     const deleteNote = async (id) => {
-        await fetch(`http://localhost:5000/delete-users/${id}`, {
-            method: 'DELETE'
-        });
-        fetchNotes();
+        try {
+            await fetch(`${API_URL}/delete-users/${id}`, {
+                method: 'DELETE'
+            });
+            fetchNotes();
+        } catch (error) {
+            console.error("Error deleting note:", error);
+        }
     };
 
     return (
