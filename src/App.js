@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = "https://tugas5tcc-85782834625.us-central1.run.app"; // URL Backend di Cloud Run
+const API_URL = "https://be-tu6-700231807331.us-central1.run.app"; // URL Backend di Cloud Run
 
 function App() {
     const [notes, setNotes] = useState([]);
